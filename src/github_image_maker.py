@@ -17,7 +17,7 @@ except ModuleNotFoundError as NO_MODULE_ERROR:
     print(f"ModuleNotFoundError:{NO_MODULE_ERROR}")
 
 class App(tk.Frame):
-    def __init__(self, master, font_dot):
+    def __init__(self, master, font_dot, color_data):
         super().__init__(master)
         self.pack()
 
@@ -77,7 +77,7 @@ class App(tk.Frame):
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
-    with open("font_data.json", "r", encoding="UTF-8") as json_file:
+    with open("font_data.json", mode="r", encoding="UTF-8") as json_file:
         json_data = json.load(json_file)
     return json_data
 
@@ -90,11 +90,13 @@ def read_ini():
 def main():
     # フォントデータ読み込み(ドット)
     font_obj = read_json()
+    # 色定義ファイルの読み込み(カラーコード)
+    color_ini = read_ini()
     # App初期設定・実行
     widget = tk.Tk()
     widget.geometry("600x400")
     widget.title("GitHub Image Maker")
-    app = App(master=widget, font_dot=font_obj)
+    app = App(master=widget, font_dot=font_obj, color_data=color_ini)
     app.mainloop()
 
 if __name__ == "__main__":
