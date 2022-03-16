@@ -24,14 +24,17 @@ class App(tk.Frame):
         master.config(menu=self.menu_bar)
 
         # 親メニュー
-        self.menus = tk.Menu(master)
-        self.menu_bar.add_cascade(label="ファイル", menu=self.menus)
+        self.file_menu = tk.Menu(master, tearoff=False)
+        self.menu_bar.add_cascade(label="ファイル", menu=self.file_menu)
 
-        # 子メニュー
-        self.menus.add_command(label="新規作成")
+        self.config_menu = tk.Menu(master, tearoff=False)
+        self.menu_bar.add_cascade(label="設定", menu=self.config_menu)
+
+        # 子メニュー(ファイル)
+        self.file_menu.add_command(label="新規作成")
 
         # キャンバス描画
-        self.canvas = tk.Canvas(master, background="#ffffff", height=300, width=300)
+        self.canvas = tk.Canvas(master, background="#ffffff", height=120, width=500)
 
         master.after(10, self.draw_canvas)
 
@@ -44,10 +47,21 @@ class App(tk.Frame):
         self.canvas.delete("obj")
         # 図形描画
         self.canvas.create_polygon(self.rands(), self.rands(), self.rands(), self.rands(), self.rands(), self.rands(),fill="red", tags="obj")
-        self.canvas.create_rectangle(100, 100, 200, 200, fill="#ebedf0", outline="#b0b4c0")
+        #self.canvas.create_rectangle(100, 100, 110, 110, fill="#ebedf0", outline="#b0b4c0")
+
+        vertical = 10
+        horizontal = 10
+
+        # 空の要素を描画
+        for i in range(20):
+            vertical += 15
+            horizontal = 10
+            for j in range(7):
+                self.canvas.create_rectangle(vertical, horizontal, vertical+10, horizontal+10, fill="#ebedf0", outline="#b0b4c0")
+                horizontal += 15
 
         self.canvas.pack()
-        self.after(50, self.draw_canvas)
+        self.after(1000, self.draw_canvas)
 
 def main():
     widget = tk.Tk()
