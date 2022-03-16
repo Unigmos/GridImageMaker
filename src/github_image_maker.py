@@ -12,6 +12,7 @@ try:
     import tkinter as tk
     import random
     import json
+    import configparser as cfgp
 except ModuleNotFoundError as NO_MODULE_ERROR:
     print(f"ModuleNotFoundError:{NO_MODULE_ERROR}")
 
@@ -79,6 +80,12 @@ def read_json():
     with open("font_data.json", "r", encoding="UTF-8") as json_file:
         json_data = json.load(json_file)
     return json_data
+
+# iniファイル(色定義ファイル)の読み込み
+def read_ini():
+    ini_data = cfgp.ConfigParser()
+    ini_data.read("color_data.ini")
+    return ini_data
 
 def main():
     # フォントデータ読み込み(ドット)
