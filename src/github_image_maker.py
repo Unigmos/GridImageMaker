@@ -48,14 +48,12 @@ class App(tk.Frame):
 
 
     def rands(self):
-        x = random.randint(50, 300)
-        return x
+        return random.randint(0, 100)
 
     def draw_canvas(self):
         self.canvas.delete("obj")
         # 図形描画
         self.canvas.create_polygon(self.rands(), self.rands(), self.rands(), self.rands(), self.rands(), self.rands(),fill="red", tags="obj")
-        #self.canvas.create_rectangle(100, 100, 110, 110, fill="#ebedf0", outline="#b0b4c0")
 
         # 初期描画位置指定
         vertical = 10
