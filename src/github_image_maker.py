@@ -8,8 +8,11 @@
 # Copyright:    (c) Shaneron 2022
 #-------------------------------------------------------------------------------
 
+# ライブラリのimport
 try:
     import tkinter as tk
+    from tkinter import messagebox
+    from tkinter import filedialog
     import random
     import json
     import configparser as cfgp
@@ -34,6 +37,7 @@ class App(tk.Frame):
 
         # 子メニュー(ファイル)
         self.file_menu.add_command(label="新規作成")
+        self.file_menu.add_command(label="名前を付けて保存", command=self.ask_save)
 
         # 子メニュー(設定)
         self.config_menu.add_command(label="サイズ変更", command=self.change_size)
@@ -47,7 +51,7 @@ class App(tk.Frame):
         self.input_box = tk.Entry(width=40)
         self.input_box.place(x=30, y=250)
 
-        # sendボタン
+        # 反映ボタン(draw_strings:引数はfont_data.jsonの中身)
         self.send_string_button = tk.Button(master, text="OK", command=lambda:self.draw_strings(font_dot_json=font_dot)).place(x=100, y=300)
 
     def rands(self):
@@ -76,15 +80,23 @@ class App(tk.Frame):
             horizontal += 15
 
         self.canvas.pack()
-        #self.after(1000, self.draw_canvas)
 
     # 記入された文字列を描画
     def draw_strings(self, font_dot_json):
         print(self.input_box.get())
         print(font_dot_json)
+        # 文字列をlist分け・1文字ずつ判定
         list_str = list(self.input_box.get())
         for strs in list_str:
-            print(strs)
+            try:
+                print(font_dot_json[strs])
+            except KeyError as KEY_ERROR:
+                messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
+
+    # 名前を付けて保存
+    def ask_save(self):
+        #self.canvas.postscript(file="outfile.ps")
+        filedialog.asksaveasfilename()
 
     # Canvasサイズ変更ダイアログ(現在開発中)
     def change_size(self):
