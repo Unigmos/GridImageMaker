@@ -35,6 +35,9 @@ class App(tk.Frame):
         # 子メニュー(ファイル)
         self.file_menu.add_command(label="新規作成")
 
+        # 子メニュー(設定)
+        self.config_menu.add_command(label="サイズ変更", command=self.change_size)
+
         # キャンバス描画
         self.canvas = tk.Canvas(master, background="#ffffff", height=120, width=500)
         self.draw_canvas()
@@ -50,6 +53,11 @@ class App(tk.Frame):
     def rands(self):
         return random.randint(0, 100)
 
+    """def create_canvas(self):
+        # キャンバス描画
+        self.canvas = tk.Canvas(self.master, background="#ffffff", height=120, width=500)
+        self.draw_canvas()"""
+
     def draw_canvas(self):
         self.canvas.delete("obj")
         # 図形描画
@@ -61,17 +69,23 @@ class App(tk.Frame):
 
         # 空の要素を描画
         for i in range(48):
-            horizontal = 10
+            vertical = 10
             for j in range(7):
-                self.canvas.create_rectangle(vertical, horizontal, vertical+10, horizontal+10, fill="#ebedf0", outline="#b0b4c0")
-                horizontal += 15
-            vertical += 15
+                self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill="#ebedf0", outline="#b0b4c0")
+                vertical += 15
+            horizontal += 15
 
         self.canvas.pack()
-        self.after(1000, self.draw_canvas)
+        #self.after(1000, self.draw_canvas)
 
     def send_string(self):
         print(self.input_box.get())
+
+    def change_size(self):
+        change_size_window = tk.Toplevel()
+        change_size_window.geometry("400x300")
+        change_size_window.resizable(width=False, height=False)
+
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
