@@ -90,13 +90,14 @@ class App(tk.Frame):
         for strs in list_str:
             try:
                 print(font_dot_json[strs])
-            except KeyError as KEY_ERROR:
+            except KeyError:
                 messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
 
     # 名前を付けて保存
     def ask_save(self):
-        #self.canvas.postscript(file="outfile.ps")
-        filedialog.asksaveasfilename()
+        file_data = filedialog.asksaveasfilename(title="名前を付けて保存", filetype=[("postscript", ".ps")])
+        self.canvas.update()
+        self.canvas.postscript(file=f"{file_data}.ps", colormode="color")
 
     # Canvasサイズ変更ダイアログ(現在開発中)
     def change_size(self):
