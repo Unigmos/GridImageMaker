@@ -37,18 +37,18 @@ class App(tk.Frame):
 
         # 子メニュー(設定)
         self.config_menu.add_command(label="サイズ変更", command=self.change_size)
+        #self.config_menu.add_command(label="描画設定", command=self.change_size)
 
         # キャンバス描画
         self.canvas = tk.Canvas(master, background="#ffffff", height=120, width=500)
         self.draw_canvas()
 
-        # テキストボックス
+        # テキストボックス(描画文字用)
         self.input_box = tk.Entry(width=40)
         self.input_box.place(x=30, y=250)
 
         # sendボタン
-        self.send_string_button = tk.Button(master, text="OK", command=self.send_string).place(x=100, y=300)
-
+        self.send_string_button = tk.Button(master, text="OK", command=lambda:self.draw_strings(font_dot_json=font_dot)).place(x=100, y=300)
 
     def rands(self):
         return random.randint(0, 100)
@@ -59,33 +59,38 @@ class App(tk.Frame):
         self.draw_canvas()"""
 
     def draw_canvas(self):
+        # 再描画時、過去に描画したオブジェクトの削除
         self.canvas.delete("obj")
-        # 図形描画
-        self.canvas.create_polygon(self.rands(), self.rands(), self.rands(), self.rands(), self.rands(), self.rands(),fill="red", tags="obj")
 
         # 初期描画位置指定
         vertical = 10
         horizontal = 10
 
         # 空の要素を描画
-        for i in range(48):
+        for i in range(30):
             vertical = 10
             for j in range(7):
-                self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill="#ebedf0", outline="#b0b4c0")
+                # 四角形描画、引数(x始点, y始点, x終点, y終点, fill:塗りつぶし, outline:枠線, tags:タグ)
+                self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill="#ebedf0", outline="#b0b4c0", tags="obj")
                 vertical += 15
             horizontal += 15
 
         self.canvas.pack()
         #self.after(1000, self.draw_canvas)
 
-    def send_string(self):
+    # 記入された文字列を描画
+    def draw_strings(self, font_dot_json):
         print(self.input_box.get())
+        print(font_dot_json)
+        list_str = list(self.input_box.get())
+        for strs in list_str:
+            print(strs)
 
+    # Canvasサイズ変更ダイアログ(現在開発中)
     def change_size(self):
         change_size_window = tk.Toplevel()
         change_size_window.geometry("400x300")
         change_size_window.resizable(width=False, height=False)
-
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
@@ -101,14 +106,14 @@ def read_ini():
 
 def main():
     # フォントデータ読み込み(ドット)
-    font_obj = read_json()
+    font_data = read_json()
     # 色定義ファイルの読み込み(カラーコード)
     color_ini = read_ini()
     # App初期設定・実行
     widget = tk.Tk()
     widget.geometry("600x400")
     widget.title("GitHub Image Maker")
-    app = App(master=widget, font_dot=font_obj, color_data=color_ini)
+    app = App(master=widget, font_dot=font_data, color_data=color_ini)
     app.mainloop()
 
 if __name__ == "__main__":
