@@ -14,6 +14,7 @@ try:
     from tkinter import messagebox
     from tkinter import filedialog
     import random
+    import sys
     import json
     import configparser as cfgp
 except ModuleNotFoundError as NO_MODULE_ERROR:
@@ -23,6 +24,9 @@ class App(tk.Frame):
     def __init__(self, master, font_dot, color_data):
         super().__init__(master)
         self.pack()
+
+        # ×ボタンでの終了
+        master.protocol("WM_DELETE_WINDOW", self.close_app)
 
         #メニューバー
         self.menu_bar = tk.Menu(master)
@@ -38,6 +42,8 @@ class App(tk.Frame):
         # 子メニュー(ファイル)
         self.file_menu.add_command(label="新規作成")
         self.file_menu.add_command(label="名前を付けて保存", command=self.ask_save)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="閉じる", command=self.close_app)
 
         # 子メニュー(設定)
         self.config_menu.add_command(label="サイズ変更", command=self.change_size)
@@ -98,6 +104,12 @@ class App(tk.Frame):
         file_data = filedialog.asksaveasfilename(title="名前を付けて保存", filetype=[("postscript", ".ps")])
         self.canvas.update()
         self.canvas.postscript(file=f"{file_data}.ps", colormode="color")
+
+    # アプリケーションの終了
+    def close_app(self):
+        self.close_ans = messagebox.askyesno(title="確認", message="ウィンドウを閉じますか？")
+        if self.close_ans:
+            self.master.destroy()
 
     # Canvasサイズ変更ダイアログ(現在開発中)
     def change_size(self):
