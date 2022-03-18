@@ -14,7 +14,6 @@ try:
     from tkinter import messagebox
     from tkinter import filedialog
     import random
-    import sys
     import json
     import configparser as cfgp
 except ModuleNotFoundError as NO_MODULE_ERROR:
@@ -58,7 +57,7 @@ class App(tk.Frame):
         self.input_box.place(x=30, y=250)
 
         # 反映ボタン(draw_strings:引数はfont_data.jsonの中身)
-        self.send_string_button = tk.Button(master, text="OK", command=lambda:self.draw_strings(font_dot_json=font_dot)).place(x=100, y=300)
+        tk.Button(master, text="OK", command=lambda:self.draw_strings(font_dot_json=font_dot)).place(x=100, y=300)
 
     def rands(self):
         return random.randint(0, 100)
@@ -108,14 +107,43 @@ class App(tk.Frame):
     # アプリケーションの終了
     def close_app(self):
         self.close_ans = messagebox.askyesno(title="確認", message="ウィンドウを閉じますか？")
+        # はい(yes)選択時のみ終了する
         if self.close_ans:
             self.master.destroy()
 
-    # Canvasサイズ変更ダイアログ(現在開発中)
+    # Canvasサイズ変更ダイアログ
     def change_size(self):
         change_size_window = tk.Toplevel()
-        change_size_window.geometry("400x300")
+        change_size_window.geometry("250x200")
+        change_size_window.title("サイズ変更")
         change_size_window.resizable(width=False, height=False)
+
+        # 横サイズLabel・Entry
+        x_size_label = tk.Label(change_size_window, text="横サイズ")
+        x_size_label.place(x=20, y=20)
+        x_size_box = tk.Entry(change_size_window, width=20)
+        x_size_box.place(x=100, y=20)
+
+        # 縦サイズLabel・Entry
+        y_size_label = tk.Label(change_size_window, text="横サイズ")
+        y_size_label.place(x=20, y=50)
+        y_size_box = tk.Entry(change_size_window, width=20)
+        y_size_box.place(x=100, y=50)
+
+        # 行数Label・Entry
+        row_size_label = tk.Label(change_size_window, text="行の数")
+        row_size_label.place(x=20, y=100)
+        row_size_box = tk.Entry(change_size_window, width=20)
+        row_size_box.place(x=100, y=100)
+
+        # 列数Label・Entry
+        column_size_label = tk.Label(change_size_window, text="列の数")
+        column_size_label.place(x=20, y=130)
+        column_size_box = tk.Entry(change_size_window, width=20)
+        column_size_box.place(x=100, y=130)
+
+        # 反映ボタン
+        tk.Button(change_size_window, text="OK").place(x=200, y=160)
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
