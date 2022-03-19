@@ -20,7 +20,7 @@ except ModuleNotFoundError as NO_MODULE_ERROR:
     print(f"ModuleNotFoundError:{NO_MODULE_ERROR}")
 
 class App(tk.Frame):
-    def __init__(self, master, font_dot, color_data):
+    def __init__(self, master, font_dot, definition_data):
         super().__init__(master)
         self.pack()
 
@@ -46,10 +46,10 @@ class App(tk.Frame):
 
         # 子メニュー(設定)
         self.config_menu.add_command(label="サイズ変更", command=self.change_size)
-        #self.config_menu.add_command(label="描画設定", command=self.change_size)
+        #self.config_menu.add_command(label="描画設定", command=self.change_style)
 
         # キャンバス描画
-        self.canvas = tk.Canvas(master, background="#ffffff", height=120, width=500)
+        self.canvas = tk.Canvas(master, background="#ffffff", width=500, height=120)
         self.draw_canvas()
 
         # テキストボックス(描画文字用)
@@ -67,7 +67,7 @@ class App(tk.Frame):
         self.canvas = tk.Canvas(self.master, background="#ffffff", height=120, width=500)
         self.draw_canvas()"""
 
-    def draw_canvas(self):
+    def draw_canvas(self, row=7, column=30):
         # 再描画時、過去に描画したオブジェクトの削除
         self.canvas.delete("obj")
 
@@ -76,9 +76,9 @@ class App(tk.Frame):
         horizontal = 10
 
         # 空の要素を描画
-        for i in range(30):
+        for i in range(column):
             vertical = 10
-            for j in range(7):
+            for j in range(row):
                 # 四角形描画、引数(x始点, y始点, x終点, y終点, fill:塗りつぶし, outline:枠線, tags:タグ)
                 self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill="#ebedf0", outline="#b0b4c0", tags="obj")
                 vertical += 15
@@ -90,11 +90,20 @@ class App(tk.Frame):
     def draw_strings(self, font_dot_json):
         print(self.input_box.get())
         print(font_dot_json)
+
+        # 初期描画位置指定
+        vertical = 10
+        horizontal = 10
+
         # 文字列をlist分け・1文字ずつ判定
         list_str = list(self.input_box.get())
         for strs in list_str:
             try:
                 print(font_dot_json[strs])
+                # 2次元配列ドットデータ(font_dot_json)から1つずつ抽出
+                for row_dots in font_dot_json[strs]:
+                    for dot in row_dots:
+                        print(dot)
             except KeyError:
                 messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
 
@@ -154,19 +163,19 @@ def read_json():
 # iniファイル(色定義ファイル)の読み込み
 def read_ini():
     ini_data = cfgp.ConfigParser()
-    ini_data.read("color_data.ini")
+    ini_data.read("definition_data.ini")
     return ini_data
 
 def main():
     # フォントデータ読み込み(ドット)
     font_data = read_json()
     # 色定義ファイルの読み込み(カラーコード)
-    color_ini = read_ini()
+    definition_ini = read_ini()
     # App初期設定・実行
     widget = tk.Tk()
     widget.geometry("600x400")
     widget.title("GitHub Image Maker")
-    app = App(master=widget, font_dot=font_data, color_data=color_ini)
+    app = App(master=widget, font_dot=font_data, definition_data=definition_ini)
     app.mainloop()
 
 if __name__ == "__main__":
