@@ -104,6 +104,12 @@ class App(tk.Frame):
                 for row_dots in font_dot_json[strs]:
                     for dot in row_dots:
                         print(dot)
+                        if dot == 1:
+                            pass
+                        elif dot == 0:
+                            pass
+                        else:
+                            messagebox.showerror(title="Data Error!!", message="font_data.jsonのデータが不正です。\nデータに「0」もしくは「1」以外の数値、文字列が含まれています。")
             except KeyError:
                 messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
 
