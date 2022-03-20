@@ -57,7 +57,7 @@ class App(tk.Frame):
         self.input_box.place(x=30, y=250)
 
         # 反映ボタン(draw_strings:引数はfont_data.jsonの中身)
-        tk.Button(master, text="OK", command=lambda:self.draw_strings(font_dot_json=font_dot)).place(x=100, y=300)
+        tk.Button(master, text="OK", command=lambda:self.draw_strings(font_dot_json=font_dot, colors=definition_data)).place(x=100, y=300)
 
     def rands(self):
         return random.randint(0, 100)
@@ -87,13 +87,13 @@ class App(tk.Frame):
         self.canvas.pack()
 
     # 記入された文字列を描画
-    def draw_strings(self, font_dot_json):
+    def draw_strings(self, font_dot_json, colors):
         print(self.input_box.get())
         print(font_dot_json)
 
         # 初期描画位置指定
         vertical = 10
-        horizontal = 10
+        horizontal = -95
 
         # 文字列をlist分け・1文字ずつ判定
         list_str = list(self.input_box.get())
@@ -102,14 +102,17 @@ class App(tk.Frame):
                 print(font_dot_json[strs])
                 # 2次元配列ドットデータ(font_dot_json)から1つずつ抽出
                 for row_dots in font_dot_json[strs]:
+                    horizontal = 10
                     for dot in row_dots:
                         print(dot)
                         if dot == 1:
-                            pass
+                            self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill=colors["LIGHTMODE"]["high_green"], outline=colors["LIGHTMODE"]["high_green_frame"], tags="font")
+                            horizontal += 15
                         elif dot == 0:
-                            pass
+                            horizontal += 15
                         else:
                             messagebox.showerror(title="Data Error!!", message="font_data.jsonのデータが不正です。\nデータに「0」もしくは「1」以外の数値、文字列が含まれています。")
+                    vertical += 15
             except KeyError:
                 messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
 
