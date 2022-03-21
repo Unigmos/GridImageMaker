@@ -53,7 +53,7 @@ class App(tk.Frame):
         self.draw_canvas()
 
         # テキストボックス(描画文字用)
-        self.input_box = tk.Entry(width=40)
+        self.input_box = tk.Entry(width=30, font=("", 20))
         self.input_box.place(x=30, y=250)
 
         # 反映ボタン(draw_strings:引数はfont_data.jsonの中身)
@@ -91,9 +91,12 @@ class App(tk.Frame):
         print(self.input_box.get())
         print(font_dot_json)
 
+        self.canvas.delete("font")
+
         # 初期描画位置指定
         vertical = 10
         horizontal = -95
+        new_pos = 10
 
         # 文字列をlist分け・1文字ずつ判定
         list_str = list(self.input_box.get())
@@ -102,7 +105,7 @@ class App(tk.Frame):
                 print(font_dot_json[strs])
                 # 2次元配列ドットデータ(font_dot_json)から1つずつ抽出
                 for row_dots in font_dot_json[strs]:
-                    horizontal = 10
+                    horizontal = new_pos
                     for dot in row_dots:
                         print(dot)
                         if dot == 1:
@@ -113,6 +116,8 @@ class App(tk.Frame):
                         else:
                             messagebox.showerror(title="Data Error!!", message="font_data.jsonのデータが不正です。\nデータに「0」もしくは「1」以外の数値、文字列が含まれています。")
                     vertical += 15
+                vertical = 10
+                new_pos += 120
             except KeyError:
                 messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
 
@@ -183,7 +188,7 @@ def main():
     # App初期設定・実行
     widget = tk.Tk()
     widget.geometry("600x400")
-    widget.title("GitHub Image Maker")
+    widget.title("Image Maker")
     app = App(master=widget, font_dot=font_data, definition_data=definition_ini)
     app.mainloop()
 
