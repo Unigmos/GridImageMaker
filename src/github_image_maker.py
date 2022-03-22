@@ -57,15 +57,10 @@ class App(tk.Frame):
         self.input_box.place(x=30, y=250)
 
         # 反映ボタン(draw_strings:引数はfont_data.jsonの中身)
-        tk.Button(master, text="OK", command=lambda:self.draw_strings(font_dot_json=font_dot, colors=definition_data)).place(x=100, y=300)
+        tk.Button(master, text="OK", relief="groove", command=lambda:self.draw_strings(font_dot_json=font_dot, colors=definition_data)).place(x=100, y=300)
 
     def rands(self):
         return random.randint(0, 100)
-
-    """def create_canvas(self):
-        # キャンバス描画
-        self.canvas = tk.Canvas(self.master, background="#ffffff", height=120, width=500)
-        self.draw_canvas()"""
 
     def draw_canvas(self, row=7, column=30):
         # 再描画時、過去に描画したオブジェクトの削除
@@ -91,6 +86,7 @@ class App(tk.Frame):
         print(self.input_box.get())
         print(font_dot_json)
 
+        # 過去に描画した文字列の削除
         self.canvas.delete("font")
 
         # 初期描画位置指定
@@ -144,29 +140,39 @@ class App(tk.Frame):
         # 横サイズLabel・Entry
         x_size_label = tk.Label(change_size_window, text="横サイズ")
         x_size_label.place(x=20, y=20)
-        x_size_box = tk.Entry(change_size_window, width=20)
-        x_size_box.place(x=100, y=20)
+        self.x_size_box = tk.Entry(change_size_window, width=20)
+        self.x_size_box.insert(tk.END, 500)
+        self.x_size_box.place(x=100, y=20)
 
         # 縦サイズLabel・Entry
-        y_size_label = tk.Label(change_size_window, text="横サイズ")
+        y_size_label = tk.Label(change_size_window, text="縦サイズ")
         y_size_label.place(x=20, y=50)
-        y_size_box = tk.Entry(change_size_window, width=20)
-        y_size_box.place(x=100, y=50)
+        self.y_size_box = tk.Entry(change_size_window, width=20)
+        self.y_size_box.insert(tk.END, 120)
+        self.y_size_box.place(x=100, y=50)
 
         # 行数Label・Entry
         row_size_label = tk.Label(change_size_window, text="行の数")
         row_size_label.place(x=20, y=100)
-        row_size_box = tk.Entry(change_size_window, width=20)
-        row_size_box.place(x=100, y=100)
+        self.row_size_box = tk.Entry(change_size_window, width=20)
+        self.row_size_box.insert(tk.END, 7)
+        self.row_size_box.place(x=100, y=100)
 
         # 列数Label・Entry
         column_size_label = tk.Label(change_size_window, text="列の数")
         column_size_label.place(x=20, y=130)
-        column_size_box = tk.Entry(change_size_window, width=20)
-        column_size_box.place(x=100, y=130)
+        self.column_size_box = tk.Entry(change_size_window, width=20)
+        self.column_size_box.insert(tk.END, 30)
+        self.column_size_box.place(x=100, y=130)
 
         # 反映ボタン
-        tk.Button(change_size_window, text="OK").place(x=200, y=160)
+        tk.Button(change_size_window, text="OK", relief="groove", command=self.re_create_canvas).place(x=200, y=160)
+
+    def re_create_canvas(self):
+        # キャンバス再描画
+        self.canvas.pack_forget()
+        self.canvas = tk.Canvas(self.master, background="#333333", width=600, height=120)
+        self.draw_canvas()
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
