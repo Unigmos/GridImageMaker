@@ -46,7 +46,7 @@ class App(tk.Frame):
 
         # 子メニュー(設定)
         self.config_menu.add_command(label="サイズ変更", command=self.change_size)
-        #self.config_menu.add_command(label="描画設定", command=self.change_style)
+        self.config_menu.add_command(label="描画設定", command=self.change_style)
 
         # キャンバス描画
         self.canvas = tk.Canvas(master, background="#ffffff", width=500, height=120)
@@ -165,12 +165,31 @@ class App(tk.Frame):
         # 反映ボタン
         tk.Button(self.change_size_window, text="OK", relief="groove", command=self.re_create_canvas).place(x=200, y=160)
 
+    # キャンバス再描画
     def re_create_canvas(self):
-        # キャンバス再描画
         self.canvas.pack_forget()
         self.canvas = tk.Canvas(self.master, background="#333333", width=self.x_size_box.get(), height=self.y_size_box.get())
         self.draw_canvas(row=int(self.row_size_box.get()), column=int(self.column_size_box.get()))
         self.change_size_window.destroy()
+
+    # 描画設定ダイアログ
+    def change_style(self):
+        self.change_style_window = tk.Toplevel()
+        self.change_style_window.geometry("400x200")
+        self.change_style_window.title("描画設定")
+
+        # 画像
+        self.light_theme = tk.PhotoImage(file="../images/no_image.png")
+        self.dark_theme = tk.PhotoImage(file="../images/no_image.png")
+        self.gray_theme = tk.PhotoImage(file="../images/no_image.png")
+
+        # グリッド配置
+        self.light_button = tk.Button(self.change_style_window, text="Light_Theme", image=self.light_theme, compound="bottom")
+        self.light_button.grid(row=0, column=0, padx=5)
+        self.dark_button = tk.Button(self.change_style_window, text="Dark_Theme", image=self.dark_theme, compound="bottom")
+        self.dark_button.grid(row=0, column=1, padx=5)
+        self.gray_button = tk.Button(self.change_style_window, text="Gray_Theme", image=self.gray_theme, compound="bottom")
+        self.gray_button.grid(row=0, column=2, padx=5)
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
