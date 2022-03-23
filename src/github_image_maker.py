@@ -83,9 +83,6 @@ class App(tk.Frame):
 
     # 記入された文字列を描画
     def draw_strings(self, font_dot_json, colors):
-        print(self.input_box.get())
-        print(font_dot_json)
-
         # 過去に描画した文字列の削除
         self.canvas.delete("font")
 
@@ -132,47 +129,48 @@ class App(tk.Frame):
 
     # Canvasサイズ変更ダイアログ
     def change_size(self):
-        change_size_window = tk.Toplevel()
-        change_size_window.geometry("250x200")
-        change_size_window.title("サイズ変更")
-        change_size_window.resizable(width=False, height=False)
+        self.change_size_window = tk.Toplevel()
+        self.change_size_window.geometry("250x200")
+        self.change_size_window.title("サイズ変更")
+        self.change_size_window.resizable(width=False, height=False)
 
         # 横サイズLabel・Entry
-        x_size_label = tk.Label(change_size_window, text="横サイズ")
+        x_size_label = tk.Label(self.change_size_window, text="横サイズ")
         x_size_label.place(x=20, y=20)
-        self.x_size_box = tk.Entry(change_size_window, width=20)
+        self.x_size_box = tk.Entry(self.change_size_window, width=20)
         self.x_size_box.insert(tk.END, 500)
         self.x_size_box.place(x=100, y=20)
 
         # 縦サイズLabel・Entry
-        y_size_label = tk.Label(change_size_window, text="縦サイズ")
+        y_size_label = tk.Label(self.change_size_window, text="縦サイズ")
         y_size_label.place(x=20, y=50)
-        self.y_size_box = tk.Entry(change_size_window, width=20)
+        self.y_size_box = tk.Entry(self.change_size_window, width=20)
         self.y_size_box.insert(tk.END, 120)
         self.y_size_box.place(x=100, y=50)
 
         # 行数Label・Entry
-        row_size_label = tk.Label(change_size_window, text="行の数")
+        row_size_label = tk.Label(self.change_size_window, text="行の数")
         row_size_label.place(x=20, y=100)
-        self.row_size_box = tk.Entry(change_size_window, width=20)
+        self.row_size_box = tk.Entry(self.change_size_window, width=20)
         self.row_size_box.insert(tk.END, 7)
         self.row_size_box.place(x=100, y=100)
 
         # 列数Label・Entry
-        column_size_label = tk.Label(change_size_window, text="列の数")
+        column_size_label = tk.Label(self.change_size_window, text="列の数")
         column_size_label.place(x=20, y=130)
-        self.column_size_box = tk.Entry(change_size_window, width=20)
+        self.column_size_box = tk.Entry(self.change_size_window, width=20)
         self.column_size_box.insert(tk.END, 30)
         self.column_size_box.place(x=100, y=130)
 
         # 反映ボタン
-        tk.Button(change_size_window, text="OK", relief="groove", command=self.re_create_canvas).place(x=200, y=160)
+        tk.Button(self.change_size_window, text="OK", relief="groove", command=self.re_create_canvas).place(x=200, y=160)
 
     def re_create_canvas(self):
         # キャンバス再描画
         self.canvas.pack_forget()
-        self.canvas = tk.Canvas(self.master, background="#333333", width=600, height=120)
-        self.draw_canvas()
+        self.canvas = tk.Canvas(self.master, background="#333333", width=self.x_size_box.get(), height=self.y_size_box.get())
+        self.draw_canvas(row=int(self.row_size_box.get()), column=int(self.column_size_box.get()))
+        self.change_size_window.destroy()
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
@@ -194,7 +192,8 @@ def main():
     # App初期設定・実行
     widget = tk.Tk()
     widget.geometry("600x400")
-    widget.title("Image Maker")
+    widget.minsize(width=600, height=400)
+    widget.title("GitHub Image Maker")
     app = App(master=widget, font_dot=font_data, definition_data=definition_ini)
     app.mainloop()
 
