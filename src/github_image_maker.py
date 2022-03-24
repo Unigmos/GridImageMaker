@@ -45,12 +45,14 @@ class App(tk.Frame):
         self.file_menu.add_command(label="閉じる", command=self.close_app)
 
         # 子メニュー(設定)
-        self.config_menu.add_command(label="サイズ変更", command=self.change_size)
+        self.config_menu.add_command(label="サイズ変更", command=lambda:self.change_size(ini_data=definition_data))
         self.config_menu.add_command(label="スタイル設定", command=self.change_style)
         # self.config_menu.add_command(label="文字色設定", command=self.font_style)
 
         # キャンバス描画
-        self.canvas = tk.Canvas(master, background="#ffffff", width=500, height=120)
+        self.canvas_x = 500
+        self.canvas_y = 120
+        self.canvas = tk.Canvas(master, background="#ffffff", width=self.canvas_x, height=self.canvas_y)
         self.draw_canvas()
 
         # テキストボックス(描画文字用)
@@ -129,7 +131,7 @@ class App(tk.Frame):
             self.master.destroy()
 
     # Canvasサイズ変更ダイアログ
-    def change_size(self):
+    def change_size(self, ini_data):
         self.change_size_window = tk.Toplevel()
         self.change_size_window.geometry("250x200")
         self.change_size_window.title("サイズ変更")
@@ -164,13 +166,28 @@ class App(tk.Frame):
         self.column_size_box.place(x=100, y=130)
 
         # 反映ボタン
-        tk.Button(self.change_size_window, text="OK", relief="groove", command=self.re_create_canvas).place(x=200, y=160)
+        tk.Button(self.change_size_window, text="OK", relief="groove", command=lambda:self.set_size(ini_data=ini_data)).place(x=200, y=160)
+
+    # 入力データをiniデータに書き込み
+    def set_size(self, ini_data):
+        ini_data.set("CANVASDATA", "x_size", self.x_size_box.get())
+        ini_data.set("CANVASDATA", "y_size", self.y_size_box.get())
+        ini_data.set("CANVASDATA", "row_size", self.row_size_box.get())
+        ini_data.set("CANVASDATA", "column_size", self.column_size_box.get())
+
+        with open("definition_data.ini", "w") as write_file:
+            ini_data.write(write_file)
+
+        self.re_create_canvas(ini_data=ini_data)
 
     # キャンバス再描画
-    def re_create_canvas(self, bg="#ffffff"):
+    def re_create_canvas(self, ini_data):
         self.canvas.pack_forget()
-        self.canvas = tk.Canvas(self.master, background=bg, width=self.x_size_box.get(), height=self.y_size_box.get())
-        self.draw_canvas(row=int(self.row_size_box.get()), column=int(self.column_size_box.get()))
+        try:
+            self.canvas = tk.Canvas(self.master, background=ini_data["CANVASDATA"]["background"], width=int(ini_data["CANVASDATA"]["x_size"]), height=int(ini_data["CANVASDATA"]["y_size"]))
+            self.draw_canvas(row=int(ini_data["CANVASDATA"]["row_size"]), column=int(ini_data["CANVASDATA"]["column_size"]))
+        except KeyError:
+            messagebox.showerror(title="Key Error!!", message="iniファイルのデータが参照できません。\nセクション名もしくはオプション名が異なっている可能性があります。")
         self.change_size_window.destroy()
 
     # 描画設定ダイアログ
