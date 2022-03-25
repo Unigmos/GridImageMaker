@@ -46,7 +46,7 @@ class App(tk.Frame):
 
         # 子メニュー(設定)
         self.config_menu.add_command(label="サイズ変更", command=lambda:self.change_size(ini_data=definition_data))
-        self.config_menu.add_command(label="スタイル設定", command=self.change_style)
+        self.config_menu.add_command(label="スタイル設定", command=lambda:self.change_style(color_data=definition_data))
         # self.config_menu.add_command(label="文字色設定", command=self.font_style)
 
         # キャンバス描画
@@ -188,10 +188,19 @@ class App(tk.Frame):
             self.draw_canvas(row=int(ini_data["CANVASDATA"]["row_size"]), column=int(ini_data["CANVASDATA"]["column_size"]))
         except KeyError:
             messagebox.showerror(title="Key Error!!", message="iniファイルのデータが参照できません。\nセクション名もしくはオプション名が異なっている可能性があります。")
-        self.change_size_window.destroy()
+
+        # 子ウィンドウ(ダイアログ)の削除
+        try:
+            self.change_size_window.destroy()
+        except:
+            pass
+        try:
+            self.change_style_window.destroy()
+        except:
+            pass
 
     # 描画設定ダイアログ
-    def change_style(self):
+    def change_style(self, color_data):
         self.change_style_window = tk.Toplevel()
         self.change_style_window.geometry("380x180")
         self.change_style_window.title("描画設定")
@@ -206,12 +215,21 @@ class App(tk.Frame):
         self.gray_theme = tk.PhotoImage(file="../images/no_image.png")
 
         # グリッド配置
-        self.light_button = tk.Button(self.change_style_window, text="Light_Theme", image=self.light_theme, compound="bottom")
+        self.light_button = tk.Button(self.change_style_window, text="Light_Theme", image=self.light_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["LIGHTMODE"]["background"]))
         self.light_button.grid(row=1, column=0, padx=5)
-        self.dark_button = tk.Button(self.change_style_window, text="Dark_Theme", image=self.dark_theme, compound="bottom")
+        self.dark_button = tk.Button(self.change_style_window, text="Dark_Theme", image=self.dark_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["DARKMODE"]["background"]))
         self.dark_button.grid(row=1, column=1, padx=5)
-        self.gray_button = tk.Button(self.change_style_window, text="Gray_Theme", image=self.gray_theme, compound="bottom")
+        self.gray_button = tk.Button(self.change_style_window, text="Gray_Theme", image=self.gray_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["GRAYMODE"]["background"]))
         self.gray_button.grid(row=1, column=2, padx=5)
+
+    # 背景色データをiniデータに書き込み
+    def set_style(self, ini_data, bg):
+        ini_data.set("CANVASDATA", "background", bg)
+
+        with open("definition_data.ini", "w") as write_file:
+            ini_data.write(write_file)
+
+        self.re_create_canvas(ini_data=ini_data)
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
