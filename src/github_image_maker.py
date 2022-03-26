@@ -53,7 +53,7 @@ class App(tk.Frame):
         self.canvas_x = 500
         self.canvas_y = 120
         self.canvas = tk.Canvas(master, background="#ffffff", width=self.canvas_x, height=self.canvas_y)
-        self.draw_canvas()
+        self.draw_canvas(ini_data=definition_data)
 
         # テキストボックス(描画文字用)
         self.input_box = tk.Entry(width=30, font=("", 20))
@@ -65,7 +65,7 @@ class App(tk.Frame):
     def rands(self):
         return random.randint(0, 100)
 
-    def draw_canvas(self, row=7, column=30):
+    def draw_canvas(self, ini_data, row=7, column=30):
         # 再描画時、過去に描画したオブジェクトの削除
         self.canvas.delete("obj")
 
@@ -78,7 +78,7 @@ class App(tk.Frame):
             vertical = 10
             for j in range(row):
                 # 四角形描画、引数(x始点, y始点, x終点, y終点, fill:塗りつぶし, outline:枠線, tags:タグ)
-                self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill="#ebedf0", outline="#b0b4c0", tags="obj")
+                self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill=ini_data["CANVASDATA"]["fill_box"], outline=ini_data["CANVASDATA"]["box_frame"], tags="obj")
                 vertical += 15
             horizontal += 15
 
@@ -185,7 +185,7 @@ class App(tk.Frame):
         self.canvas.pack_forget()
         try:
             self.canvas = tk.Canvas(self.master, background=ini_data["CANVASDATA"]["background"], width=int(ini_data["CANVASDATA"]["x_size"]), height=int(ini_data["CANVASDATA"]["y_size"]))
-            self.draw_canvas(row=int(ini_data["CANVASDATA"]["row_size"]), column=int(ini_data["CANVASDATA"]["column_size"]))
+            self.draw_canvas(ini_data=ini_data, row=int(ini_data["CANVASDATA"]["row_size"]), column=int(ini_data["CANVASDATA"]["column_size"]))
         except KeyError:
             messagebox.showerror(title="Key Error!!", message="iniファイルのデータが参照できません。\nセクション名もしくはオプション名が異なっている可能性があります。")
 
@@ -225,6 +225,19 @@ class App(tk.Frame):
     # 背景色データをiniデータに書き込み
     def set_style(self, ini_data, bg):
         ini_data.set("CANVASDATA", "background", bg)
+
+        # 背景色に応じたboxの色変更
+        if bg == ini_data["LIGHTMODE"]["background"]:
+            ini_data.set("CANVASDATA", "fill_box", ini_data["LIGHTMODE"]["none_box"])
+            ini_data.set("CANVASDATA", "box_frame", ini_data["LIGHTMODE"]["none_frame"])
+        elif bg == ini_data["DARKMODE"]["background"]:
+            ini_data.set("CANVASDATA", "fill_box", ini_data["DARKMODE"]["none_box"])
+            ini_data.set("CANVASDATA", "box_frame", ini_data["DARKMODE"]["none_frame"])
+        elif bg == ini_data["GRAYMODE"]["background"]:
+            ini_data.set("CANVASDATA", "fill_box", ini_data["GRAYMODE"]["none_box"])
+            ini_data.set("CANVASDATA", "box_frame", ini_data["GRAYMODE"]["none_frame"])
+        else:
+            pass
 
         with open("definition_data.ini", "w") as write_file:
             ini_data.write(write_file)
