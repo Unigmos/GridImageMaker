@@ -47,23 +47,24 @@ class App(tk.Frame):
         # 子メニュー(設定)
         self.config_menu.add_command(label="サイズ変更", command=lambda:self.change_size(ini_data=definition_data))
         self.config_menu.add_command(label="スタイル設定", command=lambda:self.change_style(color_data=definition_data))
-        # self.config_menu.add_command(label="文字色設定", command=self.font_style)
+        self.config_menu.add_command(label="文字色設定", command=self.font_style)
 
         # キャンバス描画
         self.canvas_x = 500
         self.canvas_y = 120
-        self.canvas = tk.Canvas(master, background="#ffffff", width=self.canvas_x, height=self.canvas_y)
+        try:
+            self.canvas = tk.Canvas(master, background=definition_data["CANVASDATA"]["background"], width=self.canvas_x, height=self.canvas_y)
+        except KeyError:
+            messagebox.showerror(title="Key Error!!", message="iniファイルデータが参照できません。\nセクション名又はオプション名が異なっている可能性があります。")
         self.draw_canvas(ini_data=definition_data)
+        self.draw_strings(font_dot_json=font_dot, ini_data=definition_data)
 
         # テキストボックス(描画文字用)
         self.input_box = tk.Entry(width=30, font=("", 20))
         self.input_box.place(x=30, y=250)
 
         # 反映ボタン(draw_strings:引数はfont_data.jsonの中身)
-        tk.Button(master, text="OK", relief="groove", command=lambda:self.draw_strings(font_dot_json=font_dot, colors=definition_data)).place(x=100, y=300)
-
-    def rands(self):
-        return random.randint(0, 100)
+        tk.Button(master, text="OK", relief="groove", command=lambda:self.draw_strings(font_dot_json=font_dot, ini_data=definition_data)).place(x=100, y=300)
 
     def draw_canvas(self, ini_data, row=7, column=30):
         # 再描画時、過去に描画したオブジェクトの削除
@@ -85,7 +86,7 @@ class App(tk.Frame):
         self.canvas.pack()
 
     # 記入された文字列を描画
-    def draw_strings(self, font_dot_json, colors):
+    def draw_strings(self, font_dot_json, ini_data):
         # 過去に描画した文字列の削除
         self.canvas.delete("font")
 
@@ -95,17 +96,25 @@ class App(tk.Frame):
         new_pos = 10
 
         # 文字列をlist分け・1文字ずつ判定
-        list_str = list(self.input_box.get())
-        for strs in list_str:
+        #list_str = list(self.input_box.get())
+
+        try:
+            # 入力文字列をiniデータに保存
+            ini_data.set("CANVASDATA", "input_string", self.input_box.get())
+            with open("definition_data.ini", "w") as write_file:
+                ini_data.write(write_file)
+        except AttributeError:
+            pass
+
+        for strs in list(ini_data["CANVASDATA"]["input_string"]):
             try:
-                print(font_dot_json[strs])
+                print(list(ini_data["CANVASDATA"]["input_string"]))
                 # 2次元配列ドットデータ(font_dot_json)から1つずつ抽出
                 for row_dots in font_dot_json[strs]:
                     horizontal = new_pos
                     for dot in row_dots:
-                        print(dot)
                         if dot == 1:
-                            self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill=colors["LIGHTMODE"]["high_green"], outline=colors["LIGHTMODE"]["high_green_frame"], tags="font")
+                            self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill=ini_data["LIGHTMODE"]["high_green"], outline=ini_data["LIGHTMODE"]["high_green_frame"], tags="font")
                             horizontal += 15
                         elif dot == 0:
                             horizontal += 15
@@ -198,6 +207,10 @@ class App(tk.Frame):
             self.change_style_window.destroy()
         except:
             pass
+        try:
+            self.change_font_style_window.destroy()
+        except:
+            pass
 
     # 描画設定ダイアログ
     def change_style(self, color_data):
@@ -243,6 +256,11 @@ class App(tk.Frame):
             ini_data.write(write_file)
 
         self.re_create_canvas(ini_data=ini_data)
+
+    def font_style(self):
+        self.change_font_style_window = tk.Toplevel()
+        self.change_font_style_window.geometry("380x180")
+        self.change_font_style_window.title("文字色設定")
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
