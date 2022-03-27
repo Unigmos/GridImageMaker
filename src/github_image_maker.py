@@ -79,7 +79,7 @@ class App(tk.Frame):
             vertical = 10
             for j in range(row):
                 # 四角形描画、引数(x始点, y始点, x終点, y終点, fill:塗りつぶし, outline:枠線, tags:タグ)
-                self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill=ini_data["CANVASDATA"]["fill_box"], outline=ini_data["CANVASDATA"]["box_frame"], tags="obj")
+                self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill=ini_data["CANVASDATA"]["none_box"], outline=ini_data["CANVASDATA"]["none_frame"], tags="obj")
                 vertical += 15
             horizontal += 15
 
@@ -99,7 +99,7 @@ class App(tk.Frame):
         #list_str = list(self.input_box.get())
 
         try:
-            # 入力文字列をiniデータに保存
+            # 入力文字列をiniデータに保存(何も入力していないなら前回の入力を保持)
             if self.input_box.get() is None:
                 pass
             else:
@@ -245,14 +245,14 @@ class App(tk.Frame):
 
         # 背景色に応じたboxの色変更
         if bg == ini_data["LIGHTMODE"]["background"]:
-            ini_data.set("CANVASDATA", "fill_box", ini_data["LIGHTMODE"]["none_box"])
-            ini_data.set("CANVASDATA", "box_frame", ini_data["LIGHTMODE"]["none_frame"])
+            ini_data.set("CANVASDATA", "none_box", ini_data["LIGHTMODE"]["none_box"])
+            ini_data.set("CANVASDATA", "none_frame", ini_data["LIGHTMODE"]["none_frame"])
         elif bg == ini_data["DARKMODE"]["background"]:
-            ini_data.set("CANVASDATA", "fill_box", ini_data["DARKMODE"]["none_box"])
-            ini_data.set("CANVASDATA", "box_frame", ini_data["DARKMODE"]["none_frame"])
+            ini_data.set("CANVASDATA", "none_box", ini_data["DARKMODE"]["none_box"])
+            ini_data.set("CANVASDATA", "none_frame", ini_data["DARKMODE"]["none_frame"])
         elif bg == ini_data["GRAYMODE"]["background"]:
-            ini_data.set("CANVASDATA", "fill_box", ini_data["GRAYMODE"]["none_box"])
-            ini_data.set("CANVASDATA", "box_frame", ini_data["GRAYMODE"]["none_frame"])
+            ini_data.set("CANVASDATA", "none_box", ini_data["GRAYMODE"]["none_box"])
+            ini_data.set("CANVASDATA", "none_frame", ini_data["GRAYMODE"]["none_frame"])
         else:
             pass
 
@@ -263,8 +263,28 @@ class App(tk.Frame):
 
     def font_style(self):
         self.change_font_style_window = tk.Toplevel()
-        self.change_font_style_window.geometry("380x180")
+        self.change_font_style_window.geometry("500x180")
         self.change_font_style_window.title("文字色設定")
+        self.change_font_style_window.resizable(width=False, height=False)
+
+        choose_font_label = tk.Label(self.change_font_style_window, text="文字色を選択してください。")
+        choose_font_label.grid(row=0, column=0, pady=5)
+
+        # 画像オブジェクト定義
+        self.high_font = tk.PhotoImage(file="../images/no_image.png")
+        self.medium_font = tk.PhotoImage(file="../images/no_image.png")
+        self.low_font = tk.PhotoImage(file="../images/no_image.png")
+        self.rand_font = tk.PhotoImage(file="../images/no_image.png")
+
+        # グリッド配置
+        self.high_font_button = tk.Button(self.change_font_style_window, text="明るめ", image=self.high_font, compound="bottom")
+        self.high_font_button.grid(row=1, column=0, padx=5)
+        self.medium_font_button = tk.Button(self.change_font_style_window, text="普通", image=self.medium_font, compound="bottom")
+        self.medium_font_button.grid(row=1, column=1, padx=5)
+        self.low_font_button = tk.Button(self.change_font_style_window, text="暗め", image=self.low_font, compound="bottom")
+        self.low_font_button.grid(row=1, column=2, padx=5)
+        self.rand_font_button = tk.Button(self.change_font_style_window, text="ランダム", image=self.low_font, compound="bottom")
+        self.rand_font_button.grid(row=1, column=3, padx=5)
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
