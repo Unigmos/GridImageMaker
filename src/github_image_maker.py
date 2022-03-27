@@ -39,7 +39,7 @@ class App(tk.Frame):
         self.menu_bar.add_cascade(label="設定", menu=self.config_menu)
 
         # 子メニュー(ファイル)
-        self.file_menu.add_command(label="新規作成")
+        self.file_menu.add_command(label="新規作成", command=self.new_file)
         self.file_menu.add_command(label="名前を付けて保存", command=self.ask_save)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="閉じる", command=self.close_app)
@@ -125,7 +125,8 @@ class App(tk.Frame):
                             messagebox.showerror(title="Data Error!!", message="font_data.jsonのデータが不正です。\nデータに「0」もしくは「1」以外の数値、文字列が含まれています。")
                     vertical += 15
                 vertical = 10
-                new_pos += 120
+                # 余白量((枠10ピクセル、余白5ピクセル)*マス数)
+                new_pos += 15*8
             except KeyError:
                 messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
 
@@ -141,6 +142,31 @@ class App(tk.Frame):
         # はい(yes)選択時のみ終了する
         if self.close_ans:
             self.master.destroy()
+
+    # 新規作成用
+    def new_file(self):
+        self.new_dialog = messagebox.askyesno(title="確認", message="保存していない現在のデータはなくなります。\nそれでも実行しますか？")
+        # はい(yes)選択時のみ終了する
+        if self.new_dialog:
+            self.canvas.pack_forget()
+            self.canvas = tk.Canvas(self.master, background="#ffffff", width=500, height=120)
+            # 再描画時、過去に描画したオブジェクトの削除
+            self.canvas.delete("obj")
+
+            # 初期描画位置指定
+            vertical = 10
+            horizontal = 10
+
+            # 空の要素を描画
+            for i in range(30):
+                vertical = 10
+                for j in range(7):
+                    # 四角形描画、引数(x始点, y始点, x終点, y終点, fill:塗りつぶし, outline:枠線, tags:タグ)
+                    self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill="#ebedf0", outline="#b0b4c0", tags="obj")
+                    vertical += 15
+                horizontal += 15
+
+            self.canvas.pack()
 
     # Canvasサイズ変更ダイアログ
     def change_size(self, ini_data, font_data):
@@ -180,7 +206,7 @@ class App(tk.Frame):
         # 反映ボタン
         tk.Button(self.change_size_window, text="OK", relief="groove", command=lambda:self.set_size(ini_data=ini_data, font_data=font_data)).place(x=200, y=160)
 
-    # 入力データをiniデータに書き込み
+    # 入力データをiniデータに書き込み(サイズ)
     def set_size(self, ini_data, font_data):
         ini_data.set("CANVASDATA", "x_size", self.x_size_box.get())
         ini_data.set("CANVASDATA", "y_size", self.y_size_box.get())
@@ -261,6 +287,7 @@ class App(tk.Frame):
 
         self.re_create_canvas(ini_data=ini_data, font_data=font_data)
 
+    # 文字色設定ダイアログ
     def font_style(self):
         self.change_font_style_window = tk.Toplevel()
         self.change_font_style_window.geometry("500x180")
@@ -285,6 +312,14 @@ class App(tk.Frame):
         self.low_font_button.grid(row=1, column=2, padx=5)
         self.rand_font_button = tk.Button(self.change_font_style_window, text="ランダム", image=self.low_font, compound="bottom")
         self.rand_font_button.grid(row=1, column=3, padx=5)
+
+    # 入力データをiniデータに書き込み(サイズ)
+    def set_font(self):
+        pass
+
+    # 文字色を設定
+    def choose_font(self):
+        pass
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
