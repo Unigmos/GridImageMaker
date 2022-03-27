@@ -45,8 +45,8 @@ class App(tk.Frame):
         self.file_menu.add_command(label="閉じる", command=self.close_app)
 
         # 子メニュー(設定)
-        self.config_menu.add_command(label="サイズ変更", command=lambda:self.change_size(ini_data=definition_data))
-        self.config_menu.add_command(label="スタイル設定", command=lambda:self.change_style(color_data=definition_data))
+        self.config_menu.add_command(label="サイズ変更", command=lambda:self.change_size(ini_data=definition_data, font_data=font_dot))
+        self.config_menu.add_command(label="スタイル設定", command=lambda:self.change_style(color_data=definition_data, font_data=font_dot))
         self.config_menu.add_command(label="文字色設定", command=self.font_style)
 
         # キャンバス描画
@@ -100,9 +100,12 @@ class App(tk.Frame):
 
         try:
             # 入力文字列をiniデータに保存
-            ini_data.set("CANVASDATA", "input_string", self.input_box.get())
-            with open("definition_data.ini", "w") as write_file:
-                ini_data.write(write_file)
+            if self.input_box.get() is None:
+                pass
+            else:
+                ini_data.set("CANVASDATA", "input_string", self.input_box.get())
+                with open("definition_data.ini", "w") as write_file:
+                    ini_data.write(write_file)
         except AttributeError:
             pass
 
@@ -140,7 +143,7 @@ class App(tk.Frame):
             self.master.destroy()
 
     # Canvasサイズ変更ダイアログ
-    def change_size(self, ini_data):
+    def change_size(self, ini_data, font_data):
         self.change_size_window = tk.Toplevel()
         self.change_size_window.geometry("250x200")
         self.change_size_window.title("サイズ変更")
@@ -175,10 +178,10 @@ class App(tk.Frame):
         self.column_size_box.place(x=100, y=130)
 
         # 反映ボタン
-        tk.Button(self.change_size_window, text="OK", relief="groove", command=lambda:self.set_size(ini_data=ini_data)).place(x=200, y=160)
+        tk.Button(self.change_size_window, text="OK", relief="groove", command=lambda:self.set_size(ini_data=ini_data, font_data=font_data)).place(x=200, y=160)
 
     # 入力データをiniデータに書き込み
-    def set_size(self, ini_data):
+    def set_size(self, ini_data, font_data):
         ini_data.set("CANVASDATA", "x_size", self.x_size_box.get())
         ini_data.set("CANVASDATA", "y_size", self.y_size_box.get())
         ini_data.set("CANVASDATA", "row_size", self.row_size_box.get())
@@ -187,14 +190,15 @@ class App(tk.Frame):
         with open("definition_data.ini", "w") as write_file:
             ini_data.write(write_file)
 
-        self.re_create_canvas(ini_data=ini_data)
+        self.re_create_canvas(ini_data=ini_data, font_data=font_data)
 
     # キャンバス再描画
-    def re_create_canvas(self, ini_data):
+    def re_create_canvas(self, ini_data, font_data):
         self.canvas.pack_forget()
         try:
             self.canvas = tk.Canvas(self.master, background=ini_data["CANVASDATA"]["background"], width=int(ini_data["CANVASDATA"]["x_size"]), height=int(ini_data["CANVASDATA"]["y_size"]))
             self.draw_canvas(ini_data=ini_data, row=int(ini_data["CANVASDATA"]["row_size"]), column=int(ini_data["CANVASDATA"]["column_size"]))
+            self.draw_strings(ini_data=ini_data, font_dot_json=font_data)
         except KeyError:
             messagebox.showerror(title="Key Error!!", message="iniファイルのデータが参照できません。\nセクション名もしくはオプション名が異なっている可能性があります。")
 
@@ -213,7 +217,7 @@ class App(tk.Frame):
             pass
 
     # 描画設定ダイアログ
-    def change_style(self, color_data):
+    def change_style(self, color_data, font_data):
         self.change_style_window = tk.Toplevel()
         self.change_style_window.geometry("380x180")
         self.change_style_window.title("描画設定")
@@ -228,15 +232,15 @@ class App(tk.Frame):
         self.gray_theme = tk.PhotoImage(file="../images/no_image.png")
 
         # グリッド配置
-        self.light_button = tk.Button(self.change_style_window, text="Light_Theme", image=self.light_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["LIGHTMODE"]["background"]))
+        self.light_button = tk.Button(self.change_style_window, text="Light_Theme", image=self.light_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["LIGHTMODE"]["background"], font_data=font_data))
         self.light_button.grid(row=1, column=0, padx=5)
-        self.dark_button = tk.Button(self.change_style_window, text="Dark_Theme", image=self.dark_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["DARKMODE"]["background"]))
+        self.dark_button = tk.Button(self.change_style_window, text="Dark_Theme", image=self.dark_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["DARKMODE"]["background"], font_data=font_data))
         self.dark_button.grid(row=1, column=1, padx=5)
-        self.gray_button = tk.Button(self.change_style_window, text="Gray_Theme", image=self.gray_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["GRAYMODE"]["background"]))
+        self.gray_button = tk.Button(self.change_style_window, text="Gray_Theme", image=self.gray_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["GRAYMODE"]["background"], font_data=font_data))
         self.gray_button.grid(row=1, column=2, padx=5)
 
     # 背景色データをiniデータに書き込み
-    def set_style(self, ini_data, bg):
+    def set_style(self, ini_data, bg, font_data):
         ini_data.set("CANVASDATA", "background", bg)
 
         # 背景色に応じたboxの色変更
@@ -255,7 +259,7 @@ class App(tk.Frame):
         with open("definition_data.ini", "w") as write_file:
             ini_data.write(write_file)
 
-        self.re_create_canvas(ini_data=ini_data)
+        self.re_create_canvas(ini_data=ini_data, font_data=font_data)
 
     def font_style(self):
         self.change_font_style_window = tk.Toplevel()
