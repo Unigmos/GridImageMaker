@@ -146,8 +146,12 @@ class App(tk.Frame):
     # 新規作成用
     def new_file(self):
         self.new_dialog = messagebox.askyesno(title="確認", message="保存していない現在のデータはなくなります。\nそれでも実行しますか？")
-        # はい(yes)選択時のみ終了する
+        # はい(yes)選択時のみEntryの削除・再描画
         if self.new_dialog:
+            # Entryの削除
+            self.input_box.delete(0, tk.END)
+
+            # Canvas再描画
             self.canvas.pack_forget()
             self.canvas = tk.Canvas(self.master, background="#ffffff", width=500, height=120)
             # 再描画時、過去に描画したオブジェクトの削除
