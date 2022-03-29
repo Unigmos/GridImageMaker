@@ -47,7 +47,7 @@ class App(tk.Frame):
         # 子メニュー(設定)
         self.config_menu.add_command(label="サイズ変更", command=lambda:self.change_size(ini_data=definition_data, font_data=font_dot))
         self.config_menu.add_command(label="スタイル設定", command=lambda:self.change_style(color_data=definition_data, font_data=font_dot))
-        self.config_menu.add_command(label="文字色設定", command=lambda:self.font_style(ini_data=definition_data))
+        self.config_menu.add_command(label="文字色設定", command=lambda:self.font_style(ini_data=definition_data, font_dot=font_dot))
 
         # キャンバス描画
         self.canvas_x = 500
@@ -56,13 +56,17 @@ class App(tk.Frame):
         try:
             self.canvas = tk.Canvas(master, background=self.default_bg, width=self.canvas_x, height=self.canvas_y)
             if self.default_bg == definition_data["LIGHTMODE"]["background"]:
-                self.mode = "LIGHTMODE"
+                definition_data.set("CANVASDATA", "mode", "LIGHTMODE")
             elif self.default_bg == definition_data["LIGHTMODE"]["background"]:
-                self.mode = "DARKMODE"
+                definition_data.set("CANVASDATA", "mode", "LIGHTMODE")
             elif self.default_bg == definition_data["LIGHTMODE"]["background"]:
-                self.mode = "GRAYMODE"
+                definition_data.set("CANVASDATA", "mode", "LIGHTMODE")
             else:
                 pass
+
+            with open("definition_data.ini", "w") as write_file:
+                definition_data.write(write_file)
+
         except KeyError:
             messagebox.showerror(title="Key Error!!", message="iniファイルデータが参照できません。\nセクション名又はオプション名が異なっている可能性があります。")
         self.draw_canvas(ini_data=definition_data)
@@ -95,7 +99,7 @@ class App(tk.Frame):
         self.canvas.pack()
 
     # 記入された文字列を描画
-    def draw_strings(self, font_dot_json, ini_data):
+    def draw_strings(self, font_dot_json, ini_data, rands=0):
         # 過去に描画した文字列の削除
         self.canvas.delete("font")
 
@@ -103,9 +107,6 @@ class App(tk.Frame):
         vertical = 10
         horizontal = -95
         new_pos = 10
-
-        # 文字列をlist分け・1文字ずつ判定
-        #list_str = list(self.input_box.get())
 
         try:
             # 入力文字列をiniデータに保存(何も入力していないなら前回の入力を保持)
@@ -126,7 +127,8 @@ class App(tk.Frame):
                     horizontal = new_pos
                     for dot in row_dots:
                         if dot == 1:
-                            self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill=ini_data["LIGHTMODE"]["high_green"], outline=ini_data["LIGHTMODE"]["high_green_frame"], tags="font")
+                            color_data = self.choose_font(rands=rands, ini_data=ini_data)
+                            self.canvas.create_rectangle(horizontal, vertical, horizontal+10, vertical+10, fill=color_data[0], outline=color_data[1], tags="font")
                             horizontal += 15
                         elif dot == 0:
                             horizontal += 15
@@ -301,7 +303,7 @@ class App(tk.Frame):
         self.re_create_canvas(ini_data=ini_data, font_data=font_data)
 
     # 文字色設定ダイアログ
-    def font_style(self, ini_data):
+    def font_style(self, ini_data, font_dot):
         self.change_font_style_window = tk.Toplevel()
         self.change_font_style_window.geometry("500x180")
         self.change_font_style_window.title("文字色設定")
@@ -317,26 +319,34 @@ class App(tk.Frame):
         self.rand_font = tk.PhotoImage(file="../images/no_image.png")
 
         # グリッド配置
-        self.high_font_button = tk.Button(self.change_font_style_window, text="明るめ", image=self.high_font, compound="bottom", command=lambda:self.set_font(brightness="high", ini_data=ini_data))
+        self.high_font_button = tk.Button(self.change_font_style_window, text="暗め", image=self.high_font, compound="bottom", command=lambda:self.set_font(brightness="high", ini_data=ini_data, font_dot=font_dot))
         self.high_font_button.grid(row=1, column=0, padx=5)
-        self.medium_font_button = tk.Button(self.change_font_style_window, text="普通", image=self.medium_font, compound="bottom", command=lambda:self.set_font(brightness="medium", ini_data=ini_data))
+        self.medium_font_button = tk.Button(self.change_font_style_window, text="普通", image=self.medium_font, compound="bottom", command=lambda:self.set_font(brightness="medium", ini_data=ini_data, font_dot=font_dot))
         self.medium_font_button.grid(row=1, column=1, padx=5)
-        self.low_font_button = tk.Button(self.change_font_style_window, text="暗め", image=self.low_font, compound="bottom", command=lambda:self.set_font(brightness="low", ini_data=ini_data))
+        self.low_font_button = tk.Button(self.change_font_style_window, text="明るめ", image=self.low_font, compound="bottom", command=lambda:self.set_font(brightness="low", ini_data=ini_data, font_dot=font_dot))
         self.low_font_button.grid(row=1, column=2, padx=5)
-        self.rand_font_button = tk.Button(self.change_font_style_window, text="ランダム", image=self.low_font, compound="bottom")
+        self.rand_font_button = tk.Button(self.change_font_style_window, text="ランダム", image=self.low_font, compound="bottom", command=lambda:self.draw_strings(ini_data=ini_data, font_dot_json=font_dot, rands=1))
         self.rand_font_button.grid(row=1, column=3, padx=5)
 
     # 入力データをiniデータに書き込み(サイズ)
-    def set_font(self, brightness, ini_data):
-        ini_data.set("CANVASDATA", "fill_box", ini_data[self.mode][f"{brightness}_green"])
-        ini_data.set("CANVASDATA", "box_frame", ini_data[self.mode][f"{brightness}_green_frame"])
+    def set_font(self, brightness, ini_data, font_dot):
+        ini_data.set("CANVASDATA", "fill_box", ini_data[ini_data["CANVASDATA"]["mode"]][f"{brightness}_green"])
+        ini_data.set("CANVASDATA", "box_frame", ini_data[ini_data["CANVASDATA"]["mode"]][f"{brightness}_green_frame"])
 
         with open("definition_data.ini", "w") as write_file:
             ini_data.write(write_file)
 
+        self.draw_strings(ini_data=ini_data, font_dot_json=font_dot)
+
     # 文字色を設定
-    def choose_font(self):
-        pass
+    def choose_font(self, ini_data, rands):
+        if rands == 0:
+            return [ini_data["CANVASDATA"]["fill_box"], ini_data["CANVASDATA"]["box_frame"]]
+        elif rands == 1:
+            rand_box = ["high_green", "medium_green", "low_green"]
+            return [ini_data[ini_data["CANVASDATA"]["mode"]][rand_box[random.randint(0, 2)]], ini_data[ini_data["CANVASDATA"]["mode"]][f"{rand_box[random.randint(0, 2)]}_frame"]]
+        else:
+            pass
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
