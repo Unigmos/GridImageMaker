@@ -121,7 +121,6 @@ class App(tk.Frame):
 
         for strs in list(ini_data["CANVASDATA"]["input_string"]):
             try:
-                print(list(ini_data["CANVASDATA"]["input_string"]))
                 # 2次元配列ドットデータ(font_dot_json)から1つずつ抽出
                 for row_dots in font_dot_json[strs]:
                     horizontal = new_pos
