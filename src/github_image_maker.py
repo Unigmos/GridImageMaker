@@ -267,9 +267,9 @@ class App(tk.Frame):
         choose_label.grid(row=0, column=0, pady=5)
 
         # 画像オブジェクト定義
-        self.light_theme = tk.PhotoImage(file="../images/no_image.png")
-        self.dark_theme = tk.PhotoImage(file="../images/no_image.png")
-        self.gray_theme = tk.PhotoImage(file="../images/no_image.png")
+        self.light_theme = tk.PhotoImage(file="../images/theme/light_theme.png")
+        self.dark_theme = tk.PhotoImage(file="../images/theme/dark_theme.png")
+        self.gray_theme = tk.PhotoImage(file="../images/theme/gray_theme.png")
 
         # グリッド配置
         self.light_button = tk.Button(self.change_style_window, text="Light_Theme", image=self.light_theme, compound="bottom", command=lambda:self.set_style(ini_data=color_data, bg=color_data["LIGHTMODE"]["background"], font_data=font_data))
