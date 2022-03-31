@@ -312,10 +312,10 @@ class App(tk.Frame):
         choose_font_label.grid(row=0, column=0, pady=5)
 
         # 画像オブジェクト定義
-        self.high_font = tk.PhotoImage(file="../images/no_image.png")
-        self.medium_font = tk.PhotoImage(file="../images/no_image.png")
-        self.low_font = tk.PhotoImage(file="../images/no_image.png")
-        self.rand_font = tk.PhotoImage(file="../images/no_image.png")
+        self.high_font = tk.PhotoImage(file="../images/font/high_font.png")
+        self.medium_font = tk.PhotoImage(file="../images/font/medium_font.png")
+        self.low_font = tk.PhotoImage(file="../images/font/low_font.png")
+        self.rand_font = tk.PhotoImage(file="../images/font/rand_font.png")
 
         # グリッド配置
         self.high_font_button = tk.Button(self.change_font_style_window, text="暗め", image=self.high_font, compound="bottom", command=lambda:self.set_font(brightness="high", ini_data=ini_data, font_dot=font_dot))
