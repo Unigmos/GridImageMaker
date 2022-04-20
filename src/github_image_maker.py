@@ -135,8 +135,12 @@ class App(tk.Frame):
                             messagebox.showerror(title="Data Error!!", message="font_data.jsonのデータが不正です。\nデータに「0」もしくは「1」以外の数値、文字列が含まれています。")
                     vertical += 15
                 vertical = 10
-                # 余白量((枠10ピクセル、余白5ピクセル)*マス数)
-                new_pos += 15*8
+                if strs.isupper():
+                    # 大文字余白※余白量((枠10ピクセル、余白5ピクセル)*マス数)
+                    new_pos += 15*8
+                elif strs.islower():
+                    # 小文字余白※余白量((枠10ピクセル、余白5ピクセル)*マス数)
+                    new_pos += 15*6
             except KeyError:
                 messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
 
@@ -349,15 +353,21 @@ class App(tk.Frame):
 
 # jsonファイル(フォントデータ)の読み込み
 def read_json():
-    with open("font_data.json", mode="r", encoding="UTF-8") as json_file:
-        json_data = json.load(json_file)
-    return json_data
+    try:
+        with open("font_data.json", mode="r", encoding="UTF-8") as json_file:
+            json_data = json.load(json_file)
+        return json_data
+    except FileNotFoundError as FILE_NOT_FOUND:
+        print(f"FileNotFoundError:{FILE_NOT_FOUND}")
 
 # iniファイル(色定義ファイル)の読み込み
 def read_ini():
-    ini_data = cfgp.ConfigParser()
-    ini_data.read("color_data.ini")
-    return ini_data
+    try:
+        ini_data = cfgp.ConfigParser()
+        ini_data.read("color_data.ini")
+        return ini_data
+    except FileNotFoundError as FILE_NOT_FOUND:
+        print(f"FileNotFoundError:{FILE_NOT_FOUND}")
 
 def main():
     # フォントデータ読み込み(ドット)
