@@ -356,7 +356,7 @@ def read_json():
 # iniファイル(色定義ファイル)の読み込み
 def read_ini():
     ini_data = cfgp.ConfigParser()
-    ini_data.read("definition_data.ini")
+    ini_data.read("color_data.ini")
     return ini_data
 
 def main():
