@@ -141,8 +141,11 @@ class App(tk.Frame):
                 elif strs.islower():
                     # 小文字余白※余白量((枠10ピクセル、余白5ピクセル)*マス数)
                     new_pos += 15*6
+                else:
+                    # その他記号等の余白量((枠10ピクセル、余白5ピクセル)*マス数)
+                    new_pos += 15*6
             except KeyError:
-                messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と「 」(スペース)です。")
+                messagebox.showerror(title="Key Error!!", message="未対応の文字列を入力している可能性があります。\n現在対応済みの文字列は大文字英語と小文字アルファベット、「 」(スペース)です。")
 
     # 名前を付けて保存
     def ask_save(self):
